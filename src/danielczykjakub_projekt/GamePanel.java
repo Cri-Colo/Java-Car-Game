@@ -18,7 +18,7 @@ public class GamePanel extends javax.swing.JPanel {
     private Car car;
     private PoliceCar policeCar;
     private Road road;
-    private boolean spacePressed = false;
+    private boolean gameStarted = false;
     
     public GamePanel() {
         initComponents();
@@ -26,6 +26,7 @@ public class GamePanel extends javax.swing.JPanel {
         car = new Car();
         policeCar = new PoliceCar();
         road = new Road();
+        loadGame();
     }
 
     /**
@@ -58,30 +59,34 @@ public class GamePanel extends javax.swing.JPanel {
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
             System.out.println("Spacja");
-            spacePressed = true;
+            gameStarted = true;
             startGame();
-        } else if (evt.getKeyCode() == KeyEvent.VK_LEFT) {
+        } else if (evt.getKeyCode() == KeyEvent.VK_LEFT && gameStarted) {
             car.moveLeft();
-        } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT) {
+        } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT && gameStarted) {
             car.moveRight();
         }
     }//GEN-LAST:event_formKeyPressed
 
     
-    private void startGame() {
+    private void loadGame() {
         add(car);
         add(policeCar);
         add(road);
         road.prepareStripes();
+        road.prepareTrees();
         revalidate();
         repaint();
+    }
+    
+    private void startGame() {
         road.startTimers();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (!spacePressed) {
+        if (!gameStarted) {
             g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
         }
     }

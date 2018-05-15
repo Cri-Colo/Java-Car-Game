@@ -13,7 +13,7 @@ public class PoliceCar extends JComponent {
     
     public PoliceCar() {
         setSize(100, 100);
-        setLocation(200, 200);
+        setLocation(175, 200);
         try {
             policeCarImage = ImageIO.read(getClass().getResource("/resources/policeCar.png"));
         } catch (IOException ex) {

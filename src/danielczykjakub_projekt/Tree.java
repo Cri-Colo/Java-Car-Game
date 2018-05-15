@@ -2,17 +2,20 @@ package danielczykjakub_projekt;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-
-public class RoadStripe extends JComponent {
+public class Tree extends JComponent {
     
     private int yPosition;
     private Timer timer;
+    private BufferedImage treeImage;
     
-    public RoadStripe(int x, int y) {
-        setSize(5, 100);
+    public Tree(int x, int y) {
+        setSize(26, 30);
         yPosition = y;
         setLocation(x, y);
         timer = new Timer(1, (e) -> {
@@ -20,6 +23,12 @@ public class RoadStripe extends JComponent {
             setLocation(getLocation().x, yPosition);
             repaint();
         });
+        try {
+            treeImage = ImageIO.read(getClass().getResource("/resources/tree.png"));
+        } catch (IOException ex) {
+            System.out.println(ex.getStackTrace());
+        }
+        
     }
     
     public void startTimer() {
@@ -29,8 +38,7 @@ public class RoadStripe extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); 
-        g.setColor(Color.white);
-        g.fillRect(0, 0, getSize().width, getSize().height);
+        g.drawImage(treeImage, 0, 0, this);
     }
-       
+    
 }
