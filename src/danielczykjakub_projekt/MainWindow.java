@@ -5,8 +5,8 @@ public class MainWindow extends javax.swing.JFrame {
 
     public MainWindow() {
         initComponents();
-        MenuPanel menuPanel = new MenuPanel(this);
-        setContentPane(menuPanel);
+        GamePanel gamePanel = new GamePanel();
+        setContentPane(gamePanel);
     }
 
     @SuppressWarnings("unchecked")

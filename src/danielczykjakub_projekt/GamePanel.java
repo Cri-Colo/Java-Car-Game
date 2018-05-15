@@ -5,17 +5,27 @@
  */
 package danielczykjakub_projekt;
 
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+
+
 /**
  *
  * @author JakubDanielczyk
  */
 public class GamePanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form GamePanel
-     */
+    private Car car;
+    private PoliceCar policeCar;
+    private Road road;
+    private boolean spacePressed = false;
+    
     public GamePanel() {
         initComponents();
+        setFocusable(true);
+        car = new Car();
+        policeCar = new PoliceCar();
+        road = new Road();
     }
 
     /**
@@ -27,30 +37,58 @@ public class GamePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-
-        jLabel1.setText("jLabel1");
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(207, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(148, 148, 148))
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(220, 220, 220)
-                .addComponent(jLabel1)
-                .addContainerGap(264, Short.MAX_VALUE))
+            .addGap(0, 500, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
+            System.out.println("Spacja");
+            spacePressed = true;
+            startGame();
+        } else if (evt.getKeyCode() == KeyEvent.VK_LEFT) {
+            car.moveLeft();
+        } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT) {
+            car.moveRight();
+        }
+    }//GEN-LAST:event_formKeyPressed
+
+    
+    private void startGame() {
+        add(car);
+        add(policeCar);
+        add(road);
+        road.prepareStripes();
+        revalidate();
+        repaint();
+        road.startTimers();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (!spacePressed) {
+            g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+        }
+    }
+    
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
