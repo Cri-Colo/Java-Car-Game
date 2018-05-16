@@ -7,6 +7,7 @@ package danielczykjakub_projekt;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import javax.swing.Timer;
 
 
 /**
@@ -15,10 +16,11 @@ import java.awt.event.KeyEvent;
  */
 public class GamePanel extends javax.swing.JPanel {
 
-    private Car car;
+    private final Car car;
     private PoliceCar policeCar;
-    private Road road;
+    private final Road road;
     private boolean gameStarted = false;
+    private Timer policeCarsTimer;
     
     public GamePanel() {
         initComponents();
@@ -88,6 +90,13 @@ public class GamePanel extends javax.swing.JPanel {
         super.paintComponent(g);
         if (!gameStarted) {
             g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+            g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+            g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+            g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+            g.fillRect(50, 50, 100, 100);
+            
+            
+            
         }
     }
     
