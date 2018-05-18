@@ -5,11 +5,8 @@
  */
 package danielczykjakub_projekt;
 
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,7 +15,6 @@ import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -43,6 +39,7 @@ public class GamePanel extends javax.swing.JPanel {
     private int explostionTimerCounter = 0;
     private Timer collisionCheckTimer;
     private int score = 0;
+    private boolean intelligentPoliceCars = false;
     
     public GamePanel() {
         initComponents();
@@ -117,6 +114,7 @@ public class GamePanel extends javax.swing.JPanel {
                 policeCarSpeed -= 10;
             } else {
                 policeCarSpeed = 16;
+                intelligentPolliceCars = true;
             }
             road.setTimersSpeed(policeCarSpeed);
         });
@@ -145,10 +143,8 @@ public class GamePanel extends javax.swing.JPanel {
         URL backGr = getClass().getResource("/resources/music.mp3");
         URL expSound = getClass().getResource("/resources/explosion.wav");
         player = new MediaPlayer(new Media(backGr.toString()));
-        player.setOnEndOfMedia(new Runnable()
-        {
-            public void run()
-            {
+        player.setOnEndOfMedia(new Runnable() {
+            public void run() {
                 player.seek(Duration.ZERO);
             }
         });
@@ -166,13 +162,29 @@ public class GamePanel extends javax.swing.JPanel {
     }
     
     private void addNewPoliceCar() {
-        int roadNumber = randomizer.nextInt(3) + 1;
-        PoliceCar policeCar = new PoliceCar(roadNumber, policeCarSpeed);
+        PoliceCar policeCar;
+        if (intelligentPoliceCars) {
+            policeCar = new PoliceCar(getCarCurrentRoadNumber(), policeCarSpeed);
+        } else {
+            int roadNumber = randomizer.nextInt(3) + 1;
+            policeCar = new PoliceCar(roadNumber, policeCarSpeed);
+        }
         policeCarsList.add(policeCar);
         remove(road);
         add(policeCar);
         add(road);
         policeCar.startTimer();
+    }
+    
+    private int getCarCurrentRoadNumber() {
+        switch (car.getX()) {
+            case 75:
+                return 1;
+            case 175:
+                return 2;
+            default:
+                return 3;
+        }
     }
     
     private void removeRedundantPoliceCars() {
