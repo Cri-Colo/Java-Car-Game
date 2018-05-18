@@ -2,6 +2,7 @@ package danielczykjakub_projekt;
 
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -13,6 +14,7 @@ public class Road extends JComponent {
     private final ArrayList<RoadStripe> StripesList = new ArrayList<>();
     private final ArrayList<Tree> TreesList = new ArrayList<>();
     private final Timer stripesTimer;
+    private boolean gameStarted = false;
     
     public Road() {
         setSize(400, 500);
@@ -29,6 +31,7 @@ public class Road extends JComponent {
     }
     
     public void startTimers() {
+        gameStarted = true;
         treeTimer.start();
         stripesTimer.start();
         Tree tree1 = new Tree(10, -80);
@@ -143,6 +146,11 @@ public class Road extends JComponent {
         g.setColor(new Color(48, 218, 54));
         g.fillRect(0, 0, 50, getSize().height);
         g.fillRect(350, 0, 50, getSize().height);
+        if (!gameStarted) {
+            g.setColor(Color.white);
+            g.setFont(new Font("Calibri", Font.BOLD, 23));
+            g.drawString("PRESS SPACE TO START", 60, 200);
+        }
     }
                 
 }
