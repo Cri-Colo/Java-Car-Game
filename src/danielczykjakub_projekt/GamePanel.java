@@ -85,7 +85,6 @@ public class GamePanel extends javax.swing.JPanel {
     
     private void loadGame() {
         add(car);
-        addNewPoliceCar();
         add(road);
         road.prepareStripes();
         road.prepareTrees();
@@ -100,14 +99,15 @@ public class GamePanel extends javax.swing.JPanel {
             revalidate();
             repaint();
         });
-        policeCarsSpawnTimer.setInitialDelay(10); // 3000
+        policeCarsSpawnTimer.setInitialDelay(3000);
         
-        policeCarsSpeedIncreaseTimer = new Timer(10000, (e) -> {
+        policeCarsSpeedIncreaseTimer = new Timer(5000, (e) -> { //////////////////////
             if (policeCarSpeed > 26) {
                 policeCarSpeed -= 10;
             } else {
                 policeCarSpeed = 16;
             }
+            road.setTimersSpeed(policeCarSpeed);
         });
     }
     
@@ -124,17 +124,20 @@ public class GamePanel extends javax.swing.JPanel {
     }
     
     private void startGame() {
+        road.setTimersSpeed(policeCarSpeed);
         road.startTimers();
         policeCarsSpawnTimer.start();
         policeCarsSpeedIncreaseTimer.start();      
-        player.play();
+        //player.play();
     }
     
     private void addNewPoliceCar() {
         int roadNumber = randomizer.nextInt(3) + 1;
         PoliceCar policeCar = new PoliceCar(roadNumber, policeCarSpeed);
         policeCarsList.add(policeCar);
+        remove(road);
         add(policeCar);
+        add(road);
         policeCar.startTimer();
     }
     
@@ -144,14 +147,6 @@ public class GamePanel extends javax.swing.JPanel {
             policeCarsList.remove(0);
         }
     }
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//        
-//    }
-    
-    
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

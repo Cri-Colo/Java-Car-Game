@@ -14,11 +14,11 @@ public class Tree extends JComponent {
     private Timer timer;
     private BufferedImage treeImage;
     
-    public Tree(int x, int y) {
+    public Tree(int x, int y, int speed) {
         setSize(26, 30);
         yPosition = y;
         setLocation(x, y);
-        timer = new Timer(16, (e) -> {
+        timer = new Timer(speed, (e) -> {
             yPosition += 10;
             setLocation(getLocation().x, yPosition);
             repaint();
