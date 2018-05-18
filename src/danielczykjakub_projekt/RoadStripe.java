@@ -10,13 +10,14 @@ public class RoadStripe extends JComponent {
     
     private int yPosition;
     private Timer timer;
+
     
     public RoadStripe(int x, int y) {
         setSize(5, 100);
         yPosition = y;
         setLocation(x, y);
-        timer = new Timer(1, (e) -> {
-            yPosition++;
+        timer = new Timer(16, (e) -> {
+            yPosition += 10;
             setLocation(getLocation().x, yPosition);
             repaint();
         });

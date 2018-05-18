@@ -7,6 +7,14 @@ package danielczykjakub_projekt;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
+import javax.swing.Timer;
 
 
 /**
@@ -15,18 +23,26 @@ import java.awt.event.KeyEvent;
  */
 public class GamePanel extends javax.swing.JPanel {
 
-    private Car car;
-    private PoliceCar policeCar;
-    private Road road;
-    private boolean gameStarted = false;
+    private final Car car;
+    private final Road road;
+    private Timer policeCarsSpawnTimer;
+    private Timer policeCarsSpeedIncreaseTimer;
+    private ArrayList<PoliceCar> policeCarsList = new ArrayList<>();
+    private int policeCarSpawnDelay = 2000;
+    private int policeCarSpeed = 100;
+    private Random randomizer = new Random();
+    private MediaPlayer player;
     
     public GamePanel() {
         initComponents();
         setFocusable(true);
+        JFXPanel fxPanel = new JFXPanel();
+        add(fxPanel);
         car = new Car();
-        policeCar = new PoliceCar();
         road = new Road();
         loadGame();
+        prepareTimers();
+        preparePlayers();
     }
 
     /**
@@ -58,12 +74,10 @@ public class GamePanel extends javax.swing.JPanel {
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
-            System.out.println("Spacja");
-            gameStarted = true;
             startGame();
-        } else if (evt.getKeyCode() == KeyEvent.VK_LEFT && gameStarted) {
+        } else if (evt.getKeyCode() == KeyEvent.VK_LEFT) {
             car.moveLeft();
-        } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT && gameStarted) {
+        } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT) {
             car.moveRight();
         }
     }//GEN-LAST:event_formKeyPressed
@@ -71,7 +85,7 @@ public class GamePanel extends javax.swing.JPanel {
     
     private void loadGame() {
         add(car);
-        add(policeCar);
+        addNewPoliceCar();
         add(road);
         road.prepareStripes();
         road.prepareTrees();
@@ -79,17 +93,63 @@ public class GamePanel extends javax.swing.JPanel {
         repaint();
     }
     
+    private void prepareTimers() {
+        policeCarsSpawnTimer = new Timer(policeCarSpawnDelay, (e) -> {
+            addNewPoliceCar();
+            removeRedundantPoliceCars();
+            revalidate();
+            repaint();
+        });
+        policeCarsSpawnTimer.setInitialDelay(10); // 3000
+        
+        policeCarsSpeedIncreaseTimer = new Timer(10000, (e) -> {
+            if (policeCarSpeed > 26) {
+                policeCarSpeed -= 10;
+            } else {
+                policeCarSpeed = 16;
+            }
+        });
+    }
+    
+    private void preparePlayers() {
+        URL backGr = getClass().getResource("/resources/music.mp3");
+        player = new MediaPlayer(new Media(backGr.toString()));
+        player.setOnEndOfMedia(new Runnable()
+        {
+            public void run()
+            {
+                player.seek(Duration.ZERO);
+            }
+        });
+    }
+    
     private void startGame() {
         road.startTimers();
+        policeCarsSpawnTimer.start();
+        policeCarsSpeedIncreaseTimer.start();      
+        player.play();
     }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (!gameStarted) {
-            g.drawString("PRESS SPACE TO START PLAYING", 100, 150);
+    
+    private void addNewPoliceCar() {
+        int roadNumber = randomizer.nextInt(3) + 1;
+        PoliceCar policeCar = new PoliceCar(roadNumber, policeCarSpeed);
+        policeCarsList.add(policeCar);
+        add(policeCar);
+        policeCar.startTimer();
+    }
+    
+    private void removeRedundantPoliceCars() {
+        if (policeCarsList.get(0).getY() >= 500) {
+            remove(policeCarsList.get(0));
+            policeCarsList.remove(0);
         }
     }
+
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//        
+//    }
     
     
     

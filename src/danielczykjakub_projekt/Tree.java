@@ -18,8 +18,8 @@ public class Tree extends JComponent {
         setSize(26, 30);
         yPosition = y;
         setLocation(x, y);
-        timer = new Timer(1, (e) -> {
-            yPosition++;
+        timer = new Timer(16, (e) -> {
+            yPosition += 10;
             setLocation(getLocation().x, yPosition);
             repaint();
         });
@@ -30,6 +30,7 @@ public class Tree extends JComponent {
         }
         
     }
+
     
     public void startTimer() {
         timer.start();
