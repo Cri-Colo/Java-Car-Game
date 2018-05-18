@@ -3,7 +3,10 @@ package danielczykjakub_projekt;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
@@ -15,6 +18,9 @@ public class Road extends JComponent {
     private final ArrayList<Tree> TreesList = new ArrayList<>();
     private Timer stripesTimer;
     private boolean gameStarted = false;
+    private BufferedImage explosionImage;
+    private int explosionImageCounter = 0;
+    public Point explosionPosition;
     
     public Road() {
         setSize(400, 500);
@@ -166,6 +172,27 @@ public class Road extends JComponent {
             TreesList.remove(1);
         }
     }
+    
+    public void nextExplosion() {
+        try {
+            explosionImage = ImageIO.read(getClass().getResource("/resources/" + explosionImageCounter + ".gif"));
+            explosionImageCounter++;
+            repaint();
+        } catch (Exception ex) {
+            System.out.println(ex.getStackTrace());
+        }
+    }
+    
+    public void stopAllTimers() {
+        treeTimer.stop();
+        stripesTimer.stop();
+        for (RoadStripe stripe : StripesList) {
+            stripe.stop();
+        }
+        for (Tree tree : TreesList) {
+            tree.stop();
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -179,6 +206,9 @@ public class Road extends JComponent {
             g.setColor(Color.white);
             g.setFont(new Font("Calibri", Font.BOLD, 23));
             g.drawString("PRESS SPACE TO START", 60, 200);
+        }
+        if (explosionImage != null) {
+            g.drawImage(explosionImage, explosionPosition.x - 100, explosionPosition.y - 100, this);
         }
     }
                 

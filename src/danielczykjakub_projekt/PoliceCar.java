@@ -46,6 +46,10 @@ public class PoliceCar extends JComponent {
         timer.start();
     }
     
+    public void stop() {
+        timer.stop();
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

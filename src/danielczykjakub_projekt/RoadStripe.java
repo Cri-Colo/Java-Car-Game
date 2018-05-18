@@ -26,6 +26,10 @@ public class RoadStripe extends JComponent {
     public void startTimer() {
         timer.start();
     }
+    
+    public void stop() {
+        timer.stop();
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
