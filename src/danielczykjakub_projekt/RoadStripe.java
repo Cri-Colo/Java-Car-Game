@@ -12,11 +12,11 @@ public class RoadStripe extends JComponent {
     private Timer timer;
 
     
-    public RoadStripe(int x, int y) {
+    public RoadStripe(int x, int y, int speed) {
         setSize(5, 100);
         yPosition = y;
         setLocation(x, y);
-        timer = new Timer(16, (e) -> {
+        timer = new Timer(speed, (e) -> {
             yPosition += 10;
             setLocation(getLocation().x, yPosition);
             repaint();
@@ -25,6 +25,10 @@ public class RoadStripe extends JComponent {
     
     public void startTimer() {
         timer.start();
+    }
+    
+    public void stop() {
+        timer.stop();
     }
 
     @Override

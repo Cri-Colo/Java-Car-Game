@@ -6,7 +6,10 @@
 package danielczykjakub_projekt;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,6 +17,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
 
@@ -32,6 +36,9 @@ public class GamePanel extends javax.swing.JPanel {
     private int policeCarSpeed = 100;
     private Random randomizer = new Random();
     private MediaPlayer player;
+    private Timer explosionTimer;
+    private int explostionTimerCounter = 0;
+    private Timer collisionCheckTimer;
     
     public GamePanel() {
         initComponents();
@@ -85,7 +92,6 @@ public class GamePanel extends javax.swing.JPanel {
     
     private void loadGame() {
         add(car);
-        addNewPoliceCar();
         add(road);
         road.prepareStripes();
         road.prepareTrees();
@@ -100,13 +106,31 @@ public class GamePanel extends javax.swing.JPanel {
             revalidate();
             repaint();
         });
-        policeCarsSpawnTimer.setInitialDelay(10); // 3000
+        policeCarsSpawnTimer.setInitialDelay(3000);
         
         policeCarsSpeedIncreaseTimer = new Timer(10000, (e) -> {
             if (policeCarSpeed > 26) {
                 policeCarSpeed -= 10;
             } else {
                 policeCarSpeed = 16;
+            }
+            road.setTimersSpeed(policeCarSpeed);
+        });
+        
+        explosionTimer = new Timer(50, (e) -> {
+                road.nextExplosion();
+                explostionTimerCounter++;
+                if (explostionTimerCounter > 12) {
+                    explosionTimer.stop();
+                }
+        });
+        
+        collisionCheckTimer = new Timer(policeCarSpeed, (e) -> {
+            if (collisionOccured()) {
+                road.explosionPosition = new Point(car.getX(), car.getY());
+                explosionTimer.start();
+                stopAllTimers();
+                //showAlert();
             }
         });
     }
@@ -124,17 +148,21 @@ public class GamePanel extends javax.swing.JPanel {
     }
     
     private void startGame() {
+        road.setTimersSpeed(policeCarSpeed);
         road.startTimers();
         policeCarsSpawnTimer.start();
         policeCarsSpeedIncreaseTimer.start();      
-        player.play();
+        //player.play();
+        collisionCheckTimer.start();
     }
     
     private void addNewPoliceCar() {
         int roadNumber = randomizer.nextInt(3) + 1;
         PoliceCar policeCar = new PoliceCar(roadNumber, policeCarSpeed);
         policeCarsList.add(policeCar);
+        remove(road);
         add(policeCar);
+        add(road);
         policeCar.startTimer();
     }
     
@@ -144,15 +172,26 @@ public class GamePanel extends javax.swing.JPanel {
             policeCarsList.remove(0);
         }
     }
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//        
-//    }
     
+    private boolean collisionOccured() {
+        for (PoliceCar policeCarr : policeCarsList) {
+            if (Math.abs(policeCarr.getX() - car.getX()) < 50 && Math.abs(policeCarr.getY() - car.getY()) < 100) {
+                return true;
+            }
+        }
+        return false;
+    }
     
-    
+    private void stopAllTimers() {
+        policeCarsSpawnTimer.stop();
+        policeCarsSpeedIncreaseTimer.stop();
+        collisionCheckTimer.stop();
+        road.stopAllTimers();
+        for (PoliceCar policeCar : policeCarsList) {
+            policeCar.stop();
+        }
+    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
