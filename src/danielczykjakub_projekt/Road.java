@@ -19,11 +19,18 @@ public class Road extends JComponent {
     private Timer stripesTimer;
     private boolean gameStarted = false;
     private BufferedImage explosionImage;
+    private BufferedImage explosionImagePart;
     private int explosionImageCounter = 0;
     public Point explosionPosition;
     
     public Road() {
         setSize(400, 500);
+        try {
+            explosionImage = ImageIO.read(getClass().getResource("/resources/explo.png"));
+        }
+        catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
         stripesTimer = new Timer(500, (e) -> {
             addNewStripes(100);
             removeRedundantStripes();
@@ -175,7 +182,7 @@ public class Road extends JComponent {
     
     public void nextExplosion() {
         try {
-            explosionImage = ImageIO.read(getClass().getResource("/resources/" + explosionImageCounter + ".gif"));
+            explosionImagePart = explosionImage.getSubimage(256 * explosionImageCounter, 0, 256, 256);
             explosionImageCounter++;
             repaint();
         } catch (Exception ex) {
@@ -207,8 +214,8 @@ public class Road extends JComponent {
             g.setFont(new Font("Calibri", Font.BOLD, 23));
             g.drawString("PRESS SPACE TO START", 60, 200);
         }
-        if (explosionImage != null) {
-            g.drawImage(explosionImage, explosionPosition.x - 100, explosionPosition.y - 100, this);
+        if (explosionImagePart != null) {
+            g.drawImage(explosionImagePart, explosionPosition.x - 100, explosionPosition.y - 100, this);
         }
     }
                 

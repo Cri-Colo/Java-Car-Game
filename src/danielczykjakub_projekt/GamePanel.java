@@ -5,19 +5,17 @@
  */
 package danielczykjakub_projekt;
 
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 
@@ -36,9 +34,12 @@ public class GamePanel extends javax.swing.JPanel {
     private int policeCarSpeed = 100;
     private Random randomizer = new Random();
     private MediaPlayer player;
+    private AudioClip soundPlayer;
     private Timer explosionTimer;
     private int explostionTimerCounter = 0;
     private Timer collisionCheckTimer;
+    private int score = 0;
+    private boolean intelligentPoliceCars = false;
     
     public GamePanel() {
         initComponents();
@@ -113,6 +114,7 @@ public class GamePanel extends javax.swing.JPanel {
                 policeCarSpeed -= 10;
             } else {
                 policeCarSpeed = 16;
+                intelligentPoliceCars = true;
             }
             road.setTimersSpeed(policeCarSpeed);
         });
@@ -129,22 +131,25 @@ public class GamePanel extends javax.swing.JPanel {
             if (collisionOccured()) {
                 road.explosionPosition = new Point(car.getX(), car.getY());
                 explosionTimer.start();
+                player.stop();
+                soundPlayer.play();
                 stopAllTimers();
-                //showAlert();
+                showAlert();
             }
         });
     }
     
     private void preparePlayers() {
-        URL backGr = getClass().getResource("/resources/music.mp3");
+        URL backGr = getClass().getResource("/resources/music.wav");
+        URL expSound = getClass().getResource("/resources/explosion.wav");
         player = new MediaPlayer(new Media(backGr.toString()));
-        player.setOnEndOfMedia(new Runnable()
-        {
-            public void run()
-            {
+        player.setOnEndOfMedia(new Runnable() {
+            public void run() {
                 player.seek(Duration.ZERO);
             }
         });
+        
+        soundPlayer = new AudioClip(expSound.toString());
     }
     
     private void startGame() {
@@ -152,13 +157,18 @@ public class GamePanel extends javax.swing.JPanel {
         road.startTimers();
         policeCarsSpawnTimer.start();
         policeCarsSpeedIncreaseTimer.start();      
-        //player.play();
+        player.play();
         collisionCheckTimer.start();
     }
     
     private void addNewPoliceCar() {
-        int roadNumber = randomizer.nextInt(3) + 1;
-        PoliceCar policeCar = new PoliceCar(roadNumber, policeCarSpeed);
+        PoliceCar policeCar;
+        if (intelligentPoliceCars) {
+            policeCar = new PoliceCar(getCarCurrentRoadNumber(), policeCarSpeed);
+        } else {
+            int roadNumber = randomizer.nextInt(3) + 1;
+            policeCar = new PoliceCar(roadNumber, policeCarSpeed);
+        }
         policeCarsList.add(policeCar);
         remove(road);
         add(policeCar);
@@ -166,10 +176,22 @@ public class GamePanel extends javax.swing.JPanel {
         policeCar.startTimer();
     }
     
+    private int getCarCurrentRoadNumber() {
+        switch (car.getX()) {
+            case 75:
+                return 1;
+            case 175:
+                return 2;
+            default:
+                return 3;
+        }
+    }
+    
     private void removeRedundantPoliceCars() {
         if (policeCarsList.get(0).getY() >= 500) {
             remove(policeCarsList.get(0));
             policeCarsList.remove(0);
+            score++;
         }
     }
     
@@ -190,6 +212,10 @@ public class GamePanel extends javax.swing.JPanel {
         for (PoliceCar policeCar : policeCarsList) {
             policeCar.stop();
         }
+    }
+    
+    private void showAlert() {
+        JOptionPane.showMessageDialog(null, "You lost! Your score was: " + score);
     }
    
 
