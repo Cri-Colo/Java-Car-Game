@@ -114,7 +114,7 @@ public class GamePanel extends javax.swing.JPanel {
                 policeCarSpeed -= 10;
             } else {
                 policeCarSpeed = 16;
-                intelligentPolliceCars = true;
+                intelligentPoliceCars = true;
             }
             road.setTimersSpeed(policeCarSpeed);
         });
@@ -140,7 +140,7 @@ public class GamePanel extends javax.swing.JPanel {
     }
     
     private void preparePlayers() {
-        URL backGr = getClass().getResource("/resources/music.mp3");
+        URL backGr = getClass().getResource("/resources/music.wav");
         URL expSound = getClass().getResource("/resources/explosion.wav");
         player = new MediaPlayer(new Media(backGr.toString()));
         player.setOnEndOfMedia(new Runnable() {
