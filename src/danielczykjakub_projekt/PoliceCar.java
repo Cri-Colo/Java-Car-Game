@@ -2,21 +2,28 @@ package danielczykjakub_projekt;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
 
 public class PoliceCar extends JComponent {
     
-    private BufferedImage policeCarImage;
+    private final BufferedImage policeCarImage;
     private int yPosition;
     private final Timer timer;
     
-    public PoliceCar(int roadNumber, int velocityInMs) {
+    public PoliceCar(int roadNumber, int velocityInMs, BufferedImage image) {
         setSize(100, 100);
-        
+        setStartingPositionFromRoadNumber(roadNumber);
+        policeCarImage = image;
+        timer = new Timer(velocityInMs, (e) -> {
+            yPosition += 10;
+            setLocation(getLocation().x, yPosition);
+            repaint();
+        });
+    }
+    
+    private void setStartingPositionFromRoadNumber(int roadNumber) {
         switch (roadNumber) {
             case 1:
                 roadNumber = 75;
@@ -28,21 +35,11 @@ public class PoliceCar extends JComponent {
                 roadNumber = 275;
                 break;
         }
-        
-        setLocation(roadNumber, -200);
-        try {
-            policeCarImage = ImageIO.read(getClass().getResource("/resources/policeCar.png"));
-        } catch (IOException ex) {
-            System.out.println(ex.getStackTrace());
-        }
-        timer = new Timer(velocityInMs, (e) -> {
-            yPosition += 10;
-            setLocation(getLocation().x, yPosition);
-            repaint();
-        });
+        yPosition = -100;
+        setLocation(roadNumber, yPosition);
     }
     
-    public void startTimer() {
+    public void start() {
         timer.start();
     }
     

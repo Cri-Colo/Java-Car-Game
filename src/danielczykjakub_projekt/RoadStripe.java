@@ -9,7 +9,7 @@ import javax.swing.Timer;
 public class RoadStripe extends JComponent {
     
     private int yPosition;
-    private Timer timer;
+    private final Timer timer;
 
     
     public RoadStripe(int x, int y, int speed) {
@@ -29,6 +29,10 @@ public class RoadStripe extends JComponent {
     
     public void stop() {
         timer.stop();
+    }
+    
+    public void setSpeed(int speed) {
+        timer.setDelay(speed);
     }
 
     @Override

@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -14,30 +16,43 @@ import javax.swing.Timer;
 public class Road extends JComponent {
     
     private Timer treeTimer;
-    private final ArrayList<RoadStripe> StripesList = new ArrayList<>();
-    private final ArrayList<Tree> TreesList = new ArrayList<>();
+    private final ArrayList<RoadStripe> stripesList = new ArrayList<>();
+    private final ArrayList<Tree> treesList = new ArrayList<>();
     private Timer stripesTimer;
     private boolean gameStarted = false;
     private BufferedImage explosionImage;
     private BufferedImage explosionImagePart;
     private int explosionImageCounter = 0;
     public Point explosionPosition;
+    private BufferedImage treeImage;
+    private int stripeSpeed = 100;
+    private int treeSpeed = 100;
+
     
     public Road() {
         setSize(400, 500);
         try {
             explosionImage = ImageIO.read(getClass().getResource("/resources/explo.png"));
+            treeImage = ImageIO.read(getClass().getResource("/resources/tree.png"));
         }
-        catch (Exception e) {
-            System.out.println(e.getStackTrace());
+        catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-        stripesTimer = new Timer(500, (e) -> {
-            addNewStripes(100);
+        prepareStripesTimer();
+        prepareTreeTimer();
+    }
+    
+    private void prepareStripesTimer() {
+        stripesTimer = new Timer(2500, (e) -> {
+            addNewStripes(stripeSpeed);
             removeRedundantStripes();
             repaint();
         });
-        treeTimer = new Timer(200, (e) -> {
-            addNewTrees(100);
+    }
+    
+    private void prepareTreeTimer() {
+        treeTimer = new Timer(1000, (e) -> {
+            addNewTrees(treeSpeed);
             removeRedundantTrees();
             repaint();
         });
@@ -47,39 +62,46 @@ public class Road extends JComponent {
         gameStarted = true;
         treeTimer.start();
         stripesTimer.start();
-        Tree tree1 = new Tree(10, -80, 100);
+        startTimersInStripesList();
+        startTimersInTreesList();
+        addFirstTrees();
+    }
+    
+    private void addFirstTrees() {
+        Tree tree1 = new Tree(10, -100, 100, treeImage);
         add(tree1);
-        TreesList.add(tree1);
-        tree1.startTimer();
-        Tree tree2 = new Tree(360, -80, 100);
+        treesList.add(tree1);
+        tree1.start();
+        Tree tree2 = new Tree(360, -100, 100, treeImage);
         add(tree2);
-        TreesList.add(tree2);
-        tree2.startTimer();
-        for (RoadStripe stripe : StripesList) {
+        treesList.add(tree2);
+        tree2.start();
+    }
+    
+    private void startTimersInStripesList() {
+        stripesList.forEach((stripe) -> {
             stripe.startTimer();
-        }
-        for (Tree tree : TreesList) {
-            tree.startTimer();
-        }
+        });
+    }
+    
+    private void startTimersInTreesList() {
+        treesList.forEach((tree) -> {
+            tree.start();
+        });
     }
     
     public void setTimersSpeed(int speed) {
         int spawnSpeed = prepareSpawnSpeed(speed);
-        stripesTimer.stop();
-        stripesTimer = new Timer(spawnSpeed, (e) -> {
-            addNewStripes(speed);
-            removeRedundantStripes();
-            repaint();
-        });
-        stripesTimer.start();
-        
-        treeTimer.stop();
-        treeTimer = new Timer(spawnSpeed / 2, (e) -> {
-            addNewTrees(speed);
-            removeRedundantTrees();
-            repaint();
-        });
-        treeTimer.start();
+        stripeSpeed = speed;
+        treeSpeed = speed;
+        stripesTimer.setDelay(spawnSpeed);
+        treeTimer.setDelay(spawnSpeed / 2);
+        for (RoadStripe stripe : stripesList) {
+            stripe.setSpeed(speed);
+        }
+        for (Tree tree : treesList) {
+            tree.setSpeed(speed);
+        }
     }
     
     private int prepareSpawnSpeed(int speed) {
@@ -93,90 +115,90 @@ public class Road extends JComponent {
     }
     
     public void prepareStripes() {
-        RoadStripe stripe = new RoadStripe(147, 30, 100);
-        StripesList.add(stripe);
+        RoadStripe stripe = new RoadStripe(147, 10, 100);
+        stripesList.add(stripe);
         add(stripe);
-        RoadStripe stripe2 = new RoadStripe(247, 30, 100);
-        StripesList.add(stripe2);
+        RoadStripe stripe2 = new RoadStripe(247, 10, 100);
+        stripesList.add(stripe2);
         add(stripe2);
         RoadStripe stripe3 = new RoadStripe(147, 340, 100);
-        StripesList.add(stripe3);
+        stripesList.add(stripe3);
         add(stripe3);
         RoadStripe stripe4 = new RoadStripe(247, 340, 100);
-        StripesList.add(stripe4);
+        stripesList.add(stripe4);
         add(stripe4);
     }
     
     public void prepareTrees() {
-        Tree tree = new Tree(10, 30, 100);
-        TreesList.add(tree);
+        Tree tree = new Tree(10, 30, 100, treeImage);
+        treesList.add(tree);
         add(tree);
-        Tree tree1 = new Tree(360, 30, 100);
-        TreesList.add(tree1);
+        Tree tree1 = new Tree(360, 30, 100, treeImage);
+        treesList.add(tree1);
         add(tree1);
-        Tree tree2 = new Tree(10, 130, 100);
-        TreesList.add(tree2);
+        Tree tree2 = new Tree(10, 130, 100, treeImage);
+        treesList.add(tree2);
         add(tree2);
-        Tree tree3 = new Tree(360, 130, 100);
-        TreesList.add(tree3);
+        Tree tree3 = new Tree(360, 130, 100, treeImage);
+        treesList.add(tree3);
         add(tree3);
-        Tree tree4 = new Tree(10, 230, 100);
-        TreesList.add(tree4);
+        Tree tree4 = new Tree(10, 230, 100, treeImage);
+        treesList.add(tree4);
         add(tree4);
-        Tree tree5 = new Tree(360, 230, 100);
-        TreesList.add(tree5);
+        Tree tree5 = new Tree(360, 230, 100, treeImage);
+        treesList.add(tree5);
         add(tree5);
-        Tree tree6 = new Tree(10, 330, 100);
-        TreesList.add(tree6);
+        Tree tree6 = new Tree(10, 330, 100, treeImage);
+        treesList.add(tree6);
         add(tree6);
-        Tree tree7 = new Tree(360, 330, 100);
-        TreesList.add(tree7);
+        Tree tree7 = new Tree(360, 330, 100, treeImage);
+        treesList.add(tree7);
         add(tree7);
-        Tree tree8 = new Tree(10, 430, 100);
-        TreesList.add(tree8);
+        Tree tree8 = new Tree(10, 430, 100, treeImage);
+        treesList.add(tree8);
         add(tree8);
-        Tree tree9 = new Tree(360, 430, 100);
-        TreesList.add(tree9);
+        Tree tree9 = new Tree(360, 430, 100, treeImage);
+        treesList.add(tree9);
         add(tree9);
     }
     
     private void addNewStripes(int speed) {
         RoadStripe stripe = new RoadStripe(147, -100, speed);
         add(stripe);
-        StripesList.add(stripe);
+        stripesList.add(stripe);
         stripe.startTimer();
         RoadStripe stripe2 = new RoadStripe(247, -100, speed);
         add(stripe2);
-        StripesList.add(stripe2);
+        stripesList.add(stripe2);
         stripe2.startTimer();
     }
     
     private void addNewTrees(int speed) {
-        Tree tree = new Tree(10, -130, speed);
+        Tree tree = new Tree(10, -130, speed, treeImage);
         add(tree);
-        TreesList.add(tree);
-        tree.startTimer();
-        Tree tree1 = new Tree(360, -130, speed);
+        treesList.add(tree);
+        tree.start();
+        Tree tree1 = new Tree(360, -130, speed, treeImage);
         add(tree1);
-        TreesList.add(tree1);
-        tree1.startTimer();
+        treesList.add(tree1);
+        tree1.start();
     }
     
     private void removeRedundantStripes() {
-        if(StripesList.get(0).getY() >= 500) {
-            remove(StripesList.get(0));
-            remove(StripesList.get(1));
-            StripesList.remove(0);
-            StripesList.remove(1);
+        if(stripesList.get(0).getY() >= 500) {
+            remove(stripesList.get(0));
+            remove(stripesList.get(1));
+            stripesList.remove(0);
+            stripesList.remove(1);
         }
     }
     
     private void removeRedundantTrees() {
-        if(TreesList.get(0).getY() >= 500) {
-            remove(TreesList.get(0));
-            remove(TreesList.get(1));
-            TreesList.remove(0);
-            TreesList.remove(1);
+        if(treesList.get(0).getY() >= 500) {
+            remove(treesList.get(0));
+            remove(treesList.get(1));
+            treesList.remove(0);
+            treesList.remove(1);
         }
     }
     
@@ -186,19 +208,19 @@ public class Road extends JComponent {
             explosionImageCounter++;
             repaint();
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            System.out.println(Arrays.toString(ex.getStackTrace()));
         }
     }
     
     public void stopAllTimers() {
         treeTimer.stop();
         stripesTimer.stop();
-        for (RoadStripe stripe : StripesList) {
+        stripesList.forEach((stripe) -> {
             stripe.stop();
-        }
-        for (Tree tree : TreesList) {
+        });
+        treesList.forEach((tree) -> {
             tree.stop();
-        }
+        });
     }
 
     @Override

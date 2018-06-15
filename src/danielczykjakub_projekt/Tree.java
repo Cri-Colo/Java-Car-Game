@@ -1,20 +1,17 @@
 package danielczykjakub_projekt;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
 public class Tree extends JComponent {
     
     private int yPosition;
-    private Timer timer;
-    private BufferedImage treeImage;
+    private final Timer timer;
+    private final BufferedImage treeImage;
     
-    public Tree(int x, int y, int speed) {
+    public Tree(int x, int y, int speed, BufferedImage image) {
         setSize(26, 30);
         yPosition = y;
         setLocation(x, y);
@@ -23,23 +20,21 @@ public class Tree extends JComponent {
             setLocation(getLocation().x, yPosition);
             repaint();
         });
-        try {
-            treeImage = ImageIO.read(getClass().getResource("/resources/tree.png"));
-        } catch (IOException ex) {
-            System.out.println(ex.getStackTrace());
-        }
-        
+        treeImage = image;
     }
 
-    
-    public void startTimer() {
+    public void start() {
         timer.start();
     }
     
     public void stop() {
         timer.stop();
     }
-
+    
+    public void setSpeed(int speed) {
+        timer.setDelay(speed);
+    }
+ 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); 
