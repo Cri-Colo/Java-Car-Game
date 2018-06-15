@@ -234,7 +234,7 @@ public class Road extends JComponent {
         if (!gameStarted) {
             g.setColor(Color.white);
             g.setFont(new Font("Calibri", Font.BOLD, 23));
-            g.drawString("PRESS SPACE TO START", 60, 200);
+            g.drawString("PRESS SPACE TO START", 90, 200);
         }
         if (explosionImagePart != null) {
             g.drawImage(explosionImagePart, explosionPosition.x - 100, explosionPosition.y - 100, this);
